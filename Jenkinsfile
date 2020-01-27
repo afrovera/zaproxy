@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+              sh "docker rm zapcontainer"
+              sh "docker run --name zapcontainer -u root -v $PWD:/zap/wrk -t
+              sh "mkdir -p
+$JENKINS_HOME/jobs/$JOB_NAME/builds/$BUILD_NUMBER/htmlreports/OWASP_ZAP"
+              sh "docker cp zapcontainer:/zap/wrk/owaspzap_report.html
+$JENKINS_HOME/jobs/$JOB_NAME/builds/$BUILD_NUMBER/htmlreports/OWASP_ZAP"
+} }
+} post {
+        always {
+           publishHTML target: [
+            allowMissing: false,
+            alwaysLinkToLastBuild: false,
+            keepAll: true,
+            reportDir: '$JENKINS_HOME/jobs/$JOB_NAME/builds/$BUILD_NUMBER',
+            reportFiles: 'owaspzap_report.html',
+            reportName: 'OWASP ZAP REPORT'
+          ]
+} }
+}
